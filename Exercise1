@@ -1,0 +1,61 @@
+abstract class Sensores
+{
+    //propiedades de la clase abstracta
+    public string  ID { get; set; }
+    public string  Tipo { get; set; }
+
+    //constructores de la abstract class
+    protected Sensores(string id, string tipo)
+    {
+       ID = id;
+       Tipo = tipo;
+    }
+    //metodo abstracto, obligatorio que todas las derivadas las tengan
+    public abstract void ProcesarDatos();
+}
+
+//clase derivada, medicion de temperatura
+class SensorTemperatura: Sensores 
+{
+    double ValorTemperatura;
+
+    //constructor de clase derivada que llama a clase base
+    public SensorTemperatura (string id, double temperatura):base(id,"Temperatura")
+    {
+        this.ValorTemperatura = temperatura;
+    }
+    //implementacion del metodo abstracto
+    public override void ProcesarDatos()
+    {
+        Console.WriteLine($"Sensor {ID} ({Tipo}): tiene un valor de  {ValorTemperatura}°C.");
+    }
+
+}
+//Clase derivada, medicion de humedad
+class SensorHumedad : Sensores
+{
+    double ValorHumedad;
+    public SensorHumedad(string id, double humedad) : base(id, "Humedad")
+    {
+        this.ValorHumedad=humedad;
+    }
+    public override void ProcesarDatos()
+    {
+        Console.WriteLine($"Sensor {ID} ({Tipo}): tiene un valor de {ValorHumedad}%.");
+    }
+
+}
+//programa para evaluar lecturas de los sensores
+class Program
+{
+    static void Main()
+    {
+        //instancias de los sensores
+        Sensores sensorTemp = new SensorTemperatura("ID_001", 17.4);
+        Sensores sensorHum = new SensorHumedad("ID_002", 12.3);
+
+        // llamada a los metodos
+        sensorTemp.ProcesarDatos();
+        sensorHum.ProcesarDatos();
+    }
+}
