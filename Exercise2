@@ -1,0 +1,124 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 17-02-2025 a las 19:14:08
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de datos: `test`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `dispositivos`
+--
+
+CREATE TABLE `dispositivos` (
+  `ID` int(11) NOT NULL,
+  `Nombre` varchar(100) NOT NULL,
+  `Tipo` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Volcado de datos para la tabla `dispositivos`
+--
+
+INSERT INTO `dispositivos` (`ID`, `Nombre`, `Tipo`) VALUES
+(1, 'Sensor temperatura', 'Temperatura'),
+(2, 'Sensor humedad', 'Humedad');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `eventos`
+--
+
+CREATE TABLE `eventos` (
+  `ID` int(11) NOT NULL,
+  `DispositivoID` int(11) NOT NULL,
+  `FechaHora` datetime NOT NULL,
+  `TipoEvento` varchar(50) NOT NULL,
+  `Valor` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Volcado de datos para la tabla `eventos`
+--
+
+INSERT INTO `eventos` (`ID`, `DispositivoID`, `FechaHora`, `TipoEvento`, `Valor`) VALUES
+(1, 1, '2025-02-17 19:09:24', 'lectura', '12.8'),
+(2, 2, '2025-02-18 12:09:25', 'lectura', '13.3'),
+(3, 2, '2025-02-17 19:09:24', 'lectura', '12.8'),
+(4, 2, '2025-02-18 12:09:25', 'lectura', '13.3');
+
+--
+-- Índices para tablas volcadas
+--
+
+--
+-- Indices de la tabla `dispositivos`
+--
+ALTER TABLE `dispositivos`
+  ADD PRIMARY KEY (`ID`);
+
+--
+-- Indices de la tabla `eventos`
+--
+ALTER TABLE `eventos`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `DispositivoID` (`DispositivoID`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
+
+--
+-- AUTO_INCREMENT de la tabla `eventos`
+--
+ALTER TABLE `eventos`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `eventos`
+--
+ALTER TABLE `eventos`
+  ADD CONSTRAINT `eventos_ibfk_1` FOREIGN KEY (`DispositivoID`) REFERENCES `dispositivos` (`ID`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+////////////////CONSULTA PARA EVENTOS POR DISPOSITIVO////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+
+SELECT d.ID, d.Nombre, COUNT(e.ID) AS CantidadEventos
+FROM Dispositivos d
+LEFT JOIN Eventos e ON d.ID = e.DispositivoID
+GROUP BY d.ID, d.Nombre
+ORDER BY CantidadEventos DESC;
+//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
