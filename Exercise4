@@ -1,0 +1,58 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Collections.Generic;
+using System.Linq;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Text;
+
+//Definicion de la API, peticiones http, ruta para los endpoint
+[ApiController]
+[Route("api/sensores")]
+public class SensorsController : ControllerBase
+{
+    //lista estatica de sensores, mismos sensores que ejercicios anteriores
+    private static List<DatosSensores> Sensores = new List<DatosSensores>
+    {
+        new DatosSensores { Id = 1, Tipo = "Temperatura", Valor = 16.5 },
+        new DatosSensores { Id = 2, Tipo = "Humedad", Valor = 12.2 }
+    };
+
+    //endpoint con paginacion, solicitudes GET, Authorize= autenticacion JWT
+    [HttpGet]
+    [Authorize]
+    public IActionResult GetSensors([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    {
+        var pagedSensors = Sensores.Skip((page - 1) * pageSize).Take(pageSize);
+        return Ok(pagedSensors);
+    }
+    //endpoint POST para autenticacion JWT
+    [HttpPost("authenticate")]
+    public IActionResult Authenticate([FromBody] CredencialesUsuario credentials)
+    {
+        //validacion de credenciales
+        if (credentials.Username == "admin" && credentials.Password == "password")
+        {
+
+            //Generacion de token JWT
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes("super_secret_key"); //se genera token con clave secreta:"super_secret_key"
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, credentials.Username) }),
+                Expires = DateTime.UtcNow.AddHours(1),//se establece expiracion de una hora
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)//se firma token con SHA256
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return Ok(new { Token = tokenHandler.WriteToken(token) });//se devuelve token en formato JSON
+        }
+
+        return Unauthorized();//Devuelve token en formato JSON, si son incorrectas devuelve HTTP 401(Unauthorized)
+    }
+}
+//Datos para el sensor
+public class DatosSensores
+{
+    public int Id { get; set; }
