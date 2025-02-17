@@ -1,0 +1,18 @@
+{
+    //coleccion donde se almacenan los eventos de sensores
+    "sensor_events": {
+        "DispositivoID": "string", 
+    "FechaHora": { "$date": "YYYY-MM-DDTHH:MM:SSZ" },
+    "Valor": "number"
+    }
+}
+
+// Consulta de agregación para obtener el promedio de Valor por DispositivoID
+[
+  {
+    "$group": {//agrupa documentos segun campo especifico
+      "_id": "$DispositivoID",
+      "PromedioValor": { "$avg": "$Valor" }//calcula el promedio del "Valor"
+    }
+  }
+]
